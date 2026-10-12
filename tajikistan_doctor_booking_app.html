@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Системаи Қайдкунӣ ба Духтур + AI</title>
+    <style>
+        :root {
+            --primary: #0284c7;
+            --primary-dark: #0369a1;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --warning: #ca8a04;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn {
+            background-color: white;
+            color: var(--primary);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #f1f5f9;
+        }
+
+        main {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-top: 30px;
+            margin-bottom: 50px;
+        }
+
+        @media (max-width: 900px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: var(--primary-dark);
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* Doctors Grid */
+        .doctors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .doctor-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            background: white;
+        }
+
+        .doctor-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .status-free { background-color: var(--success); }
+        .status-busy { background-color: var(--danger); }
+        .status-cancelled { background-color: var(--warning); color: #fff; }
+
+        /* AI Chat Window */
+        .chat-box {
+            height: 250px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 10px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            background: #f1f5f9;
+            font-size: 0.9rem;
+        }
+
+        .chat-msg {
+            margin-bottom: 8px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            max-width: 85%;
+        }
+
+        .chat-msg.user {
+            background: #e0f2fe;
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .chat-msg.ai {
+            background: white;
+            border: 1px solid #e2e8f0;
+        }
+
+        .chat-input-area {
+            display: flex;
+            gap: 5px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px; right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #64748b;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            border: 1px solid #e2e8f0;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th { background: #f1f5f9; }
+
+        .action-btn {
+            padding: 5px 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            color: white;
+            margin-right: 4px;
+        }
+        .btn-warn { background: var(--warning); }
+        .btn-err { background: var(--danger); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container header-content">
+            <h1>🏥 Электронӣ Клиника ва AI Ёрдамчи</h1>
+            <button class="btn" onclick="openAdminModal()">Админ Панел</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <main>
+            <!-- Qismati chap: Band kardan va ro'yxat -->
+            <div>
+                <section class="card">
+                    <h2>Қайд шудан ба қабули духтур</h2>
+                    <form id="bookingForm">
+                        <div class="form-group">
+                            <label for="patientName">Ному насаби шумо:</label>
+                            <input type="text" id="patientName" required placeholder="Масалан: Собир Собиров">
+                        </div>
+                        <div class="form-group">
+                            <label for="doctorSelect">Интихоби духтур:</label>
+                            <select id="doctorSelect" required>
+                                <option value="">Духтурро интихоб кунед...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="bookingDate">Сана ва вақт (Масалан, пагоҳ соат 11:00):</label>
+                            <input type="datetime-local" id="bookingDate" required>
+                        </div>
+                        <button type="submit" class="btn-primary">Банд кардан</button>
+                    </form>
+                </section>
+
+                <section class="card">
+                    <h2>Рӯйхати духтурон ва ҳолати онҳо</h2>
+                    <div id="doctorsContainer" class="doctors-grid">
+                        <!-- JS orqali to'ldiriladi -->
+                    </div>
+                </section>
+            </div>
+
+            <!-- Qismati o'ng: AI Maslahatchi -->
+            <div>
+                <section class="card">
+                    <h2>🤖 AI Ёрдамчии Тиббӣ</h2>
+                    <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 10px;">Ба ҳар як саволатон дар бораи саломатӣ ё тартиби қабул ҷавоб медиҳад:</p>
+                    <div id="chatBox" class="chat-box">
+                        <div class="chat-msg ai">Салом! Ман ёрдамчии сунъии шумо ҳастам. Чӣ хизмат расонам?</div>
+                    </div>
+                    <div class="chat-input-area">
+                        <input type="text" id="chatInput" placeholder="Саволатонро нависед...">
+                        <button class="btn" style="background:var(--primary); color:white;" onclick="sendAiMessage()">Фиристодан</button>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Admin Panel Modal -->
+    <div id="adminModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeAdminModal()">&times;</span>
+            <h2>Даромадан ба Админ Панел</h2>
+            
+            <div id="loginSection">
+                <div class="form-group">
+                    <label for="adminPass">Пароли махfии админ:</label>
+                    <input type="password" id="adminPass" placeholder="Паролро ворид кунед...">
+                </div>
+                <button class="btn-primary" onclick="checkAdminPassword()">Ворид шудан</button>
+            </div>
+
+            <div id="dashboardSection" style="display: none;">
+                <h3 style="color: var(--primary); margin-bottom: 15px;">Базаи Маълумоти Админ (Бандкуниҳо)</h3>
+                <div style="overflow-x: auto;">
+                    <table id="adminTable">
+                        <thead>
+                            <tr>
+                                <th>Бемор</th>
+                                <th>Духтур</th>
+                                <th>Вақти қайд</th>
+                                <th>Ҳолат</th>
+                                <th>Амалҳо</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- JS orqali to'ldiriladi -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 style="color: var(--primary); margin: 25px 0 15px 0;">Илова кардани духтури нав</h3>
+                <form id="addDoctorForm">
+                    <div class="form-group">
+                        <input type="text" id="newDocName" placeholder="Ному насаби духтур (масалан: Др. Алиев)" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="newDocSpec" placeholder="Мутахассис (масалан: Кардиолог)" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="newDocImg" placeholder="Сурат (URL-и расм, холи монед мо худаш мемонем)" value="https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=300" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Духтурро илова кардан</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // LocalStorage bazasi
+        let doctors = JSON.parse(localStorage.getItem('doc_list')) || [
+            { id: 1, name: "Др. Шарифзода Ф.", spec: "Терапевт", img: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300", status: "free" },
+            { id: 2, name: "Др. Каримова З.", spec: "Педиатр", img: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=300", status: "free" }
+        ];
+
+        let appointments = JSON.parse(localStorage.getItem('doc_appointments')) || [];
+
+        function saveData() {
+            localStorage.setItem('doc_list', JSON.stringify(doctors));
+            localStorage.setItem('doc_appointments', JSON.stringify(appointments));
+        }
+
+        // Render qilish
+        function renderInterface() {
+            const docContainer = document.getElementById('doctorsContainer');
+            const docSelect = document.getElementById('doctorSelect');
+            
+            docContainer.innerHTML = '';
+            docSelect.innerHTML = '<option value="">Духтурро интихоб кунед...</option>';
+
+            doctors.forEach(doc => {
+                let statusText = doc.status === 'free' ? 'Холӣ' : (doc.status === 'busy' ? 'Банд' : 'Отмен шуд');
+                let statusClass = doc.status === 'free' ? 'status-free' : (doc.status === 'busy' ? 'status-busy' : 'status-cancelled');
+
+                docContainer.innerHTML += `
+                    <div class="doctor-card">
+                        <img src="${doc.img}" alt="${doc.name}" class="doctor-img">
+                        <h4 style="font-size:0.95rem; margin-bottom:2px;">${doc.name}</h4>
+                        <p style="font-size:0.8rem; color:#64748b;">${doc.spec}</p>
+                        <span class="status-badge ${statusClass}">${statusText}</span>
+                    </div>
+                `;
+
+                if(doc.status === 'free') {
+                    docSelect.innerHTML += `<option value="${doc.id}">${doc.name} - ${doc.spec}</option>`;
+                }
+            });
+            saveData();
+        }
+
+        // Band kardan
+        document.getElementById('bookingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('patientName').value;
+            const docId = parseInt(document.getElementById('doctorSelect').value);
+            const date = document.getElementById('bookingDate').value;
+
+            if(!docId) {
+                alert('Лутфан духтури озодро интихоб кунед!');
+                return;
+            }
+
+            appointments.push({
+                id: Date.now(),
+                patient: name,
+                doctorId: docId,
+                date: date,
+                status: 'busy'
+            });
+
+            let doc = doctors.find(d => d.id === docId);
+            if(doc) doc.status = 'busy';
+
+            renderInterface();
+            this.reset();
+            alert('Шумо бо муваффақият вақти қабули духтурро банд кардед!');
+        });
+
+        // AI Chatbot Logic
+        function sendAiMessage() {
+            const input = document.getElementById('chatInput');
+            const chatBox = document.getElementById('chatBox');
+            const text = input.value.trim();
+            if(!text) return;
+
+            chatBox.innerHTML += `<div class="chat-msg user">${text}</div>`;
+            input.value = '';
+
+            setTimeout(() => {
+                let reply = "Ман ба саволи шумо ҷавоб ёфтам. Лутфан дар сайти мо вақти қабулро интихоб кунед ё ба табиб муроҷиат намоед.";
+                const lower = text.toLowerCase();
+                if(lower.includes('салом') || lower.includes('алому алайкум')) {
+                    reply = "Ассалому алайкум! Чӣ хизмат карда метавонам?";
+                } else if(lower.includes('нарх') || lower.includes('пул')) {
+                    reply = "Машварати аввалия дар клиникаи мо ройгон аст.";
+                } else if(lower.includes('соат') || lower.includes('вақт')) {
+                    reply = "Клиника ҳамарӯза аз соат 08:00 то 18:00 фаъолият мекунад.";
+                }
+                chatBox.innerHTML += `<div class="chat-msg ai">${reply}</div>`;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 500);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Admin Modal
+        function openAdminModal() {
+            document.getElementById('adminModal').style.display = 'flex';
+        }
+        function closeAdminModal() {
+            document.getElementById('adminModal').style.display = 'none';
+            document.getElementById('dashboardSection').style.display = 'none';
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('adminPass').value = '';
+        }
+
+        function checkAdminPassword() {
+            const pass = document.getElementById('adminPass').value;
+            if(pass === 'сардор0505') {
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('dashboardSection').style.display = 'block';
+                renderAdminTable();
+            } else {
+                alert('Пароли нодуруст аст!');
+            }
+        }
+
+        function renderAdminTable() {
+            const tbody = document.querySelector('#adminTable tbody');
+            tbody.innerHTML = '';
+
+            appointments.forEach(app => {
+                let doc = doctors.find(d => d.id === app.doctorId);
+                let docName = doc ? doc.name : 'Номаълум';
+                let statusName = app.status === 'busy' ? 'Банд' : 'Отмен шуда';
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${app.patient}</td>
+                        <td>${docName}</td>
+                        <td>${app.date}</td>
+                        <td>${statusName}</td>
+                        <td>
+                            <button class="action-btn btn-warn" onclick="cancelAppointment(${app.id})">Отмена</button>
+                            <button class="action-btn btn-err" onclick="deleteAppointment(${app.id})">Тоза</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function cancelAppointment(id) {
+            let app = appointments.find(a => a.id === id);
+            if(app) {
+                app.status = 'cancelled';
+                let doc = doctors.find(d => d.id === app.doctorId);
+                if(doc) doc.status = 'free'; // Shifokor bo'sh (yashil) bo'ladi
+                renderInterface();
+                renderAdminTable();
+                alert('Қайд отменить карда шуд ва духтур холӣ гардид.');
+            }
+        }
+
+        function deleteAppointment(id) {
+            let app = appointments.find(a => a.id === id);
+            if(app) {
+                let doc = doctors.find(d => d.id === app.doctorId);
+                if(doc && doc.status === 'busy') doc.status = 'free';
+                appointments = appointments.filter(a => a.id !== id);
+                renderInterface();
+                renderAdminTable();
+            }
+        }
+
+        // Doktor qo'shish
+        document.getElementById('addDoctorForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('newDocName').value;
+            const spec = document.getElementById('newDocSpec').value;
+            const img = document.getElementById('newDocImg').value;
+
+            doctors.push({
+                id: Date.now(),
+                name: name,
+                spec: spec,
+                img: img,
+                status: 'free'
+            });
+
+            renderInterface();
+            this.reset();
+            alert('Духтури нав бомуваффақият илова карда шуд!');
+        });
+
+        renderInterface();
+    </script>
+</body>
+</html>
